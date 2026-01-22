@@ -1,163 +1,215 @@
-# JLPT Shell Greeting
+# JLPT Quiz
 
-A terminal greeting script that displays a random Japanese vocabulary word from the JLPT (Japanese Language Proficiency Test) every time you open a new terminal session.
+An interactive terminal quiz tool for practicing JLPT (Japanese Language Proficiency Test) vocabulary. Get tested on kanji, get hints when you're stuck, and practice offline with cached words.
 
 ## Features
 
-- 🎲 **Random JLPT words** from all levels (N5-N1)
-- 📚 **Automatic level selection** - randomly picks a JLPT level each session
-- 🔄 **Smart tracking** - remembers which words you've seen and shows new ones
-- 🌐 **Real-time data** - fetches words from [Jisho.org](https://jisho.org) API
-- 🎨 **Colorful output** - beautifully formatted with kanji, reading, and meanings
-- ⚡ **Fast and lightweight** - minimal dependencies
-
-## Preview
-
-```
-📚 JLPT Word of the Session
-食べる  (たべる)
-to eat, to live on (e.g. a salary), to live off, to subsist on
-Verb N5
-```
+- 🎯 **Kanji-first learning** - See only the kanji, no hints unless you need them
+- 💡 **Smart hints** - Get the English meaning if you answer incorrectly on first try
+- 🔄 **Second chance** - Try again after seeing the hint
+- 💾 **Offline practice** - Words are cached locally for learning without internet
+- 📊 **Progress tracking** - Tracks your correct/incorrect answers
+- 🎲 **Spaced repetition** - Prioritizes words you struggle with
+- ⚡ **No dependencies** - Uses only Python 3 standard library
 
 ## Installation
 
 ### Prerequisites
 
 - Python 3.x
-- Zsh (for shell integration)
+- Terminal (zsh recommended for shell integration)
 
 ### Setup
 
-1. Clone this repository:
+1. Clone the repository:
    ```bash
    git clone https://github.com/yourusername/jlpt-shell.git
    cd jlpt-shell
    ```
 
-2. Make the scripts executable:
+2. Make scripts executable:
    ```bash
    chmod +x jlpt_greeting.py
    chmod +x jlpt-greeting.zsh
    ```
 
-3. Add to your `.zshrc` to run on every terminal session:
+3. (Optional) Add to `.zshrc` for easy access:
    ```bash
-   echo 'source /path/to/jlpt-shell/jlpt-greeting.zsh' >> ~/.zshrc
-   ```
-   
-   Replace `/path/to/jlpt-shell` with the actual path to this repository.
-
-4. Reload your shell:
-   ```bash
-   source ~/.zshrc
+   source /path/to/jlpt-shell/jlpt-greeting.zsh
    ```
 
 ## Usage
 
-### Automatic (Recommended)
-
-Once installed in your `.zshrc`, a new JLPT word will appear every time you open a new terminal session.
-
-### Manual
-
-You can also run the script manually anytime:
+### Quick Start
 
 ```bash
+# Start quiz with random JLPT level
 python3 jlpt_greeting.py
+
+# Or using the alias (if sourced in .zshrc)
+jlpt-quiz
 ```
 
-Or using the Zsh wrapper:
+### Command Options
 
 ```bash
-./jlpt-greeting.zsh
+# Quiz specific JLPT level (N5-N1)
+python3 jlpt_greeting.py --level N3
+
+# Practice offline (no internet required)
+python3 jlpt_greeting.py --offline
+
+# Combine options
+python3 jlpt_greeting.py --level N5 --offline
+```
+
+### Full Help
+
+```bash
+python3 jlpt_greeting.py --help
 ```
 
 ## How It Works
 
-1. The script randomly selects a JLPT level (N5, N4, N3, N2, or N1)
-2. Fetches vocabulary data from the Jisho.org API
-3. Tracks previously shown words in `~/.cache/jlpt-greeting/`
-4. Displays a new word with:
-   - Kanji (if available)
-   - Reading (hiragana/katakana)
-   - English meanings
-   - Part of speech and JLPT level
-5. When all words from a level have been shown, the cycle resets
+### Quiz Flow
 
-## Configuration
+1. **Kanji Only** - You see only the kanji/word
+   ```
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   食べる
+   Romaji >
+   ```
 
-You can modify the `JLPT_LEVEL` variable in `jlpt_greeting.py` to focus on a specific level:
+2. **First Attempt** - Type the romaji reading
+   - ✓ **Correct?** → Shows meaning and moves to next word
+   - ✗ **Wrong?** → Shows meaning as a hint, gives you a second try
 
-```python
-# Random level (default)
-JLPT_LEVEL = random.choice(["N5", "N4", "N3", "N2", "N1"])
+3. **Second Attempt** (if needed) - Try again with the hint
+   - ✓ **Correct?** → Counts as correct, moves to next word
+   - ✗ **Wrong?** → Shows correct answer, marks as incorrect
 
-# Or fix to a specific level
-JLPT_LEVEL = "N3"
+### Example Session
+
 ```
+🎯 JLPT Quiz Mode - N5
+Type the romaji reading for each kanji. Type 'quit' to exit.
 
-## Cache Management
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+食べる
 
-The script caches which words you've seen in:
-```
-~/.cache/jlpt-greeting/shown_N*.txt
-```
+Romaji > taberu
+✓ Correct!
+to eat, to live on (e.g. a salary)
+Ichidan verb • N5
 
-To reset and see all words again, simply delete these files:
-```bash
-rm -rf ~/.cache/jlpt-greeting/
+Continue? (y/n): y
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+学校
+
+Romaji > gakkou
+✗ Incorrect.
+Hint - Meaning: school, School
+
+Try again > gakkō
+✓ Correct on second try!
+Ichidan verb • N5
+
+Continue? (y/n):
 ```
 
 ## JLPT Levels
 
-- **N5** - Basic level (beginner)
+- **N5** - Beginner level
 - **N4** - Elementary level
 - **N3** - Intermediate level
 - **N2** - Advanced level
-- **N1** - Expert level (most difficult)
+- **N1** - Proficiency level (most difficult)
 
-## Dependencies
+## Cache & Data
 
-- Python 3.x standard library only (no external packages required!)
-- Internet connection (for fetching words from Jisho.org)
+### Cache Location
+
+Words and statistics are stored in:
+```
+~/.cache/jlpt-quiz/
+```
+
+Files:
+- `words_N*.json` - Cached vocabulary for each level
+- `quiz_stats_N*.json` - Your performance stats (correct/incorrect counts)
+
+### Building Your Cache
+
+Words are automatically cached as you quiz:
+1. First time online - Words are fetched from Jisho.org API and cached
+2. After that - Use `--offline` to practice without internet
+3. Cache grows as you use the tool - More words = more practice material
+
+### Reset Cache
+
+To reset and start fresh:
+```bash
+# Delete everything
+rm -rf ~/.cache/jlpt-quiz/
+
+# Keep words but reset stats
+rm ~/.cache/jlpt-quiz/quiz_stats_*.json
+```
+
+## Learning Tips
+
+1. **Start with N5** - Build fundamentals before moving up
+2. **Practice regularly** - Small daily sessions are more effective
+3. **Use offline mode** - Practice anywhere without internet
+4. **Focus on weak words** - The tool prioritizes words you struggle with
+5. **Second attempt learning** - The hint helps cement the connection
+
+## Commands During Quiz
+
+- Type **romaji** to answer
+- Type **quit**, **exit**, or **q** to stop the quiz
+- Press **Enter** on "Continue?" to keep going (defaults to yes)
 
 ## Troubleshooting
 
-### Script doesn't run on terminal open
-- Verify the path in your `.zshrc` is correct
-- Check that scripts are executable: `ls -l jlpt_greeting.py`
-- Try running manually to see error messages
+### "No cached words available"
+- Run online mode first: `python3 jlpt_greeting.py --level N5`
+- This downloads and caches words from Jisho.org
 
-### No words displayed
-- Check your internet connection
-- The Jisho.org API might be temporarily unavailable
-- Try running manually to see specific error messages
+### Answer marked wrong but seems right
+- Romaji uses flexible matching for common variations (ou/ō, uu/ū)
+- The quiz expects the specific reading from the API
+- Some kanji have multiple readings; the quiz tests one specific reading
 
-### "No vocabulary found" message
-- This is rare but can happen if the API returns no results
-- Simply open a new terminal session to try again
+### No internet connection
+- Use `--offline` flag to practice with cached words
+- Build cache during online sessions for offline use
 
-## Contributing
+## Data Source
 
-Contributions are welcome! Feel free to:
-- Report bugs
-- Suggest new features
-- Submit pull requests
+Words and readings are fetched from [Jisho.org](https://jisho.org) - a free Japanese dictionary API.
+
+## Requirements
+
+- Python 3.x (standard library only - no pip packages needed)
+- Internet connection (for initial word fetching; cached mode requires no internet)
 
 ## License
 
-MIT License - feel free to use and modify as you wish.
+MIT
 
-## Credits
+## Contributing
 
-- Vocabulary data powered by [Jisho.org](https://jisho.org)
-- Inspired by the need to practice Japanese vocabulary daily
+Feel free to:
+- Report bugs
+- Suggest features
+- Improve the tool
 
-## Acknowledgments
+## Future Ideas
 
-Special thanks to the Jisho.org team for providing a free and reliable Japanese dictionary API.
-
----
-
-**Happy learning! 頑張って！(がんばって / Ganbatte / Good luck!)**
+- Stats dashboard showing progress over time
+- Difficulty levels within each JLPT level
+- Custom word lists
+- Audio pronunciation
+- Kanji stroke order visualization
